@@ -33,7 +33,7 @@ module.exports = {
     if (!rawInput) {
       let msg = "";
       for (const category of Object.keys(categories).sort()) {
-        msg += `◉━━━━「 ${category} 」━━━━◉\n`;
+        msg += `◉━━━「 ${category} 」━━━◉\n`;
         const cmds = categories[category].sort();
         const cmdPrefix = "◍"; 
         
@@ -43,12 +43,12 @@ module.exports = {
       }
 
       msg += `
-┏─━─━─━─━─━─━─━─━─━─━─━─━─━─━─━─━─▢
+┏─━─━─━─━─━─━─━─━─━─━──▢
 ┃ ⬤ Total cmds: [ ${commands.size} ].
 ┃ ⬤ Type [ ${prefix}help <cmd> ]
 ┃ to learn the usage.
 ┃ ⬤ Owner: 𝗢𝗣𝗨-𝗦𝗘𝗡𝗦𝗘𝗶 🤭
-┗─━─━─━─━─━─━─━─━─━─━─━─━─━─━─━─━─▢
+┗─━─━─━─━─━─━─━─━─━─━──▢
           
            [ LORA AI ]`;
 
@@ -66,7 +66,7 @@ module.exports = {
         return message.reply(`❌ Category "${categoryName}" not found.\nAvailable: ${Object.keys(categories).map(c => `[${c}]`).join(", ")}`);
       }
 
-      let msg = `◉━━━━「 ${categoryName} 」━━━━◉\n`;
+      let msg = `◉━━━「 ${categoryName} 」━━━◉\n`;
       const cmdPrefix = "◍"; 
       const cmdList = list.map(cmd => `${cmdPrefix}${cmd}`).join(" ");
       msg += cmdList + "\n\n";
