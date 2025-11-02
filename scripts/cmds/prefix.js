@@ -9,7 +9,7 @@ module.exports = {
 		countDown: 5,
 		role: 0,
 		description: "Thay đổi dấu lệnh của bot trong box chat của bạn hoặc cả hệ thống bot (chỉ admin bot)",
-		category:"info",
+		category: "info",
 		guide: {
 			vi: "   {pn} <new prefix>: thay đổi prefix mới trong box chat của bạn"
 				+ "\n   Ví dụ:"
@@ -45,7 +45,7 @@ module.exports = {
 			confirmThisThread: "Please react to this message to confirm change prefix in your box chat",
 			successGlobal: "Changed prefix of system bot to: %1",
 			successThisThread: "Changed prefix in your box chat to: %1",
-			myPrefix: "Hey senpai! ~_~\n🌐 Global prefix: %1\n🛸 Your group chat prefix: %2"
+			myPrefix: "🚽 ꜱʏꜱᴛᴇᴍ ᴘʀᴇꜰɪx 【 %1 】\n🚀 ʏᴏᴜʀ ʙᴏx ᴄʜᴀᴛ ᴘʀᴇꜰɪx 【 %2 】\n\nᴅᴇᴠᴇʟᴏᴘᴇʀ: 𝐎𝐏𝐔 𝐒𝐄𝐍𝐒𝐄 ♻️"
 		}
 	},
 
@@ -100,4 +100,4 @@ module.exports = {
 				return message.reply(getLang("myPrefix", global.GoatBot.config.prefix, utils.getPrefix(event.threadID)));
 			};
 	}
-};
+}; 
