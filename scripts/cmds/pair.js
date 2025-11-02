@@ -6,12 +6,12 @@ module.exports = {
     name: "pair",
     aliases: [],
     version: "1.0",
-    author: "nexo_here",
+    author: "opu",
     countDown: 5,
     role: 0,
     shortDescription: " ",
     longDescription: "",
-    category: "love",
+    category: "fun",
     guide: "{pn}"
   },
 
