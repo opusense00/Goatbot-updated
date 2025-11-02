@@ -2,9 +2,9 @@ module.exports = {
   config: {
     name: "delete",
     aliases: ["del"],
-    author: "nexo_here",
+    author: "opusense",
 role: 2,
-    category: "system"
+    category: "owner"
   },
 
   onStart: async function ({ api, event, args }) {
