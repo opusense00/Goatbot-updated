@@ -6,7 +6,7 @@ module.exports = {
   config: {
     name: "imgur",
     version: "1.0",
-    author: "nexo_here",
+    author: "image",
     category: "tools",
     shortDescription: "Upload replied image to Imgur & get link",
     longDescription: "Reply to an image with this command to get its Imgur link",
