@@ -14,7 +14,7 @@ module.exports = {
     longDescription: {
       en: "Generate fast AI images using Hridoy API Midjourney-style."
     },
-    category: "Image Generation",
+    category: "ai",
     role: 0,
     guide: {
       en: "{pn} <prompt>"
