@@ -1,69 +1,74 @@
-const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
 
 module.exports = {
-  config: {
-    name: "4k",
-    aliases: ["remini"],
-    version: "1.2",
-    author: "nexo_here",
-    countDown: 5,
-    role: 0,
-    shortDescription: "Upscale image to 4K",
-    longDescription: "Upscale an image using smfahim.xyz",
-    category: "image",
-    guide: {
-      en: "{pn} [url] or reply to an image"
-    },
-    usePrefix: true
-  },
-
-  onStart: async function ({ api, event, args }) {
-    let url = null;
-
-    // ✅ If user replied to an image
-    if (event.messageReply?.attachments?.[0]?.type === "photo") {
-      url = event.messageReply.attachments[0].url;
-    }
-
-    // ✅ Or used direct image URL
-    if (!url && args[0]?.startsWith("http")) {
-      url = args[0];
-    }
-
-    // ❌ If no valid image source
-    if (!url) {
-      return api.sendMessage("❌ Reply to an image or provide a direct image URL.", event.threadID, event.messageID);
-    }
-
-    try {
-      api.setMessageReaction("🔄", event.messageID, () => {}, true);
-
-      const res = await axios.get(`https://smfahim.xyz/4k?url=${encodeURIComponent(url)}`);
-      if (!res.data?.status || !res.data?.image) {
-        api.setMessageReaction("❌", event.messageID, () => {}, true);
-        return api.sendMessage("⚠️ Upscaling failed. Try another image.", event.threadID, event.messageID);
-      }
-
-      const img = await axios.get(res.data.image, { responseType: "arraybuffer" });
-      const imgPath = path.join(__dirname, "cache", `${event.senderID}_4k.jpg`);
-      fs.writeFileSync(imgPath, Buffer.from(img.data, "binary"));
-
-      api.sendMessage(
-        { attachment: fs.createReadStream(imgPath) },
-        event.threadID,
-        () => {
-          fs.unlinkSync(imgPath);
-          api.setMessageReaction("✅", event.messageID, () => {}, true);
+    config: {
+        name: '4k',
+        version: '1.1',
+        role: 0,
+        author: "opu_sense",
+        countDown: 5,
+        prefix: true,
+        groupAdminOnly: false,
+        description: 'Enhances image quality to 4K resolution. Reply to an image to enhance it.',
+        category: 'image',
+        guide: {
+            en: '   {pn}4k [reply to an image] or {pn}4k [/@mention|uid]'
         },
-        event.messageID
-      );
+    },
+    onStart: async ({ api, event }) => {
+        const { senderID, mentions, messageReply } = event;
+        let imageUrl;
+        let targetIDForFilename = senderID;
 
-    } catch (err) {
-      console.error("[4k] Error:", err.message);
-      api.setMessageReaction("❌", event.messageID, () => {}, true);
-      api.sendMessage("❌ Error occurred while processing image.", event.threadID, event.messageID);
+        if (messageReply && messageReply.attachments && messageReply.attachments.length > 0 && ['photo', 'sticker'].includes(messageReply.attachments[0].type)) {
+            imageUrl = messageReply.attachments[0].url;
+            targetIDForFilename = messageReply.senderID;
+        } else {
+            let targetID = senderID;
+            if (Object.keys(mentions).length > 0) {
+                targetID = Object.keys(mentions)[0];
+            } else if (event.body.split(' ').length > 1) {
+                const uid = event.body.split(' ')[1].replace(/[^0-9]/g, '');
+                if (uid.length === 15 || uid.length === 16) targetID = uid;
+            }
+            targetIDForFilename = targetID;
+            imageUrl = `https://graph.facebook.com/${targetID}/picture?width=512&height=512&access_token=6628568379|c1e620fa708a1d5696fb991c1bde5662`;
+        }
+
+        if (!imageUrl) {
+            return api.sendMessage("Please reply to an image or mention a user to enhance their profile picture.", event.threadID);
+        }
+
+        const apiUrl = `https://hridoy-apis.vercel.app/tools/remini?url=${encodeURIComponent(imageUrl)}&apikey=hridoyXQC`;
+
+        try {
+            api.sendMessage("✅ | Enhancing image to 4K, please wait...", event.threadID);
+            console.log(`[API Request] Sending to: ${apiUrl}`);
+            const response = await axios.get(apiUrl);
+            console.log(`[API Response] Status: ${response.status}, Status Text: ${response.statusText}`);
+
+            if (response.data && response.data.status && response.data.result) {
+                const enhancedImageResponse = await axios.get(response.data.result, { responseType: 'arraybuffer' });
+                
+                const cacheDir = path.join(__dirname, 'cache');
+                if (!fs.existsSync(cacheDir)) {
+                    fs.mkdirSync(cacheDir);
+                }
+                const imagePath = path.join(cacheDir, `4k_${targetIDForFilename}_${Date.now()}.png`);
+                fs.writeFileSync(imagePath, Buffer.from(enhancedImageResponse.data, 'binary'));
+
+                api.sendMessage({
+                    attachment: fs.createReadStream(imagePath)
+                }, event.threadID, () => fs.unlinkSync(imagePath));
+            } else {
+                api.sendMessage("Failed to enhance the image. The API may be down or the image format is not supported.", event.threadID);
+            }
+
+        } catch (error) {
+            console.error("Error generating or sending 4K image:", error);
+            api.sendMessage("Sorry, an error occurred while processing the image. Please try again later.", event.threadID);
+        }
     }
-  }
 };
